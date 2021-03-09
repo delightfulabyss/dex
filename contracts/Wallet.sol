@@ -29,7 +29,7 @@ contract Wallet {
         require(tokenMapping[ticker].tokenAddress != address(0), "Token is not supported at this time");
         require(IERC20(tokenMapping[ticker].tokenAddress).getBalanceOf(msg.sender)>= amount, "Insufficient balance for deposit");
         balances[msg.sender][ticker] = balances[msg.sender][ticker].add(amount);
-        IERC20(tokenMapping[ticker].tokenAddress).transfer(address.this, amount);
+        IERC20(tokenMapping[ticker].tokenAddress).transferFrom(msg.sender, address(this), amount);
     }
 
     function withdraw(uint amount, bytes32 ticker) external {
