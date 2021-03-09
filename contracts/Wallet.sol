@@ -4,7 +4,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"
 import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol"
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol"
 
-contract Wallet {
+contract Wallet is Ownable {
     
     using SafeMath for uint256;
 
@@ -21,7 +21,7 @@ contract Wallet {
     mapping (address => mapping(bytes32 => uint256)) public balances;
     
     //Takes information about a token and adds it to storage
-    function addTokenSupport(bytes32 ticker, address tokenAddress) external {
+    function addTokenSupport(bytes32 ticker, address tokenAddress) external onlyOwner {
         tokenMapping[ticker] = Token(ticker, tokenAddress);
         tokenList.push(ticker);
     }
