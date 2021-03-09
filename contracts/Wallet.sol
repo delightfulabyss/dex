@@ -1,8 +1,12 @@
 pragma solidity >= 0.6.0 < 0.8.0;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"
+import "../node_modules/@openzeppelin/contracts/mat/SafeMath.sol"
+
 contract Wallet {
     
+    using SafeMath for uint256;
+
     //In order for the dex to call the token contract to do transfer calls (support for the token)
     struct Token {
         bytes32 ticker;
@@ -22,5 +26,10 @@ contract Wallet {
     }
 
     function deposit(uint amount, bytes32 ticker) external {}
-    function withdraw(uint amount, bytes32 ticker) external {}
+    function withdraw(uint amount, bytes32 ticker) external {
+        require(tokenMapping[ticker].tokenAddress != address(0), "Token is not supported at this time");
+        require(balances[msg.sender][ticker]>= amount, "Insufficient balance for withdrawal");
+        balances[msg.sender][ticker] = balances[msg.sender][ticker].sub(amount);
+        IERC20(tokenMapping[ticker].tokenAddress).transfer(msg.sender, amount);
+    }
 }
