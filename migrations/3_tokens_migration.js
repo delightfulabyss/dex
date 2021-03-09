@@ -1,7 +1,7 @@
 const Link = artifacts.require("Link");
 const Wallet = artifacts.require("Wallet");
 
-module.exports = async function (deployer, accounts) {
+module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(Link);
   let wallet = await Wallet.deployed();
   let link = await Link.deployed();
