@@ -24,18 +24,22 @@ contract Wallet {
         tokenMapping[ticker] = Token(ticker, tokenAddress);
         tokenList.push(ticker);
     }
-
-    function deposit(uint amount, bytes32 ticker) external {
+    
+    modifier tokenExists(bytes32 ticker) {
         require(tokenMapping[ticker].tokenAddress != address(0), "Token is not supported at this time");
+        _;
+    }
+
+    function deposit(uint amount, bytes32 ticker) external tokenExists {
         require(IERC20(tokenMapping[ticker].tokenAddress).getBalanceOf(msg.sender)>= amount, "Insufficient balance for deposit");
         balances[msg.sender][ticker] = balances[msg.sender][ticker].add(amount);
         IERC20(tokenMapping[ticker].tokenAddress).transferFrom(msg.sender, address(this), amount);
     }
 
-    function withdraw(uint amount, bytes32 ticker) external {
-        require(tokenMapping[ticker].tokenAddress != address(0), "Token is not supported at this time");
+    function withdraw(uint amount, bytes32 ticker) external tokenExists {
         require(balances[msg.sender][ticker]>= amount, "Insufficient balance for withdrawal");
         balances[msg.sender][ticker] = balances[msg.sender][ticker].sub(amount);
         IERC20(tokenMapping[ticker].tokenAddress).transfer(msg.sender, amount);
     }
+
 }
