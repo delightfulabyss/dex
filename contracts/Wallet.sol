@@ -32,13 +32,13 @@ contract Wallet is Ownable   {
         _;
     }
 
-    function deposit(uint amount, bytes32 ticker) external tokenExists {
-        require(IERC20(tokenMapping[ticker].tokenAddress).getBalanceOf(msg.sender)>= amount, "Insufficient balance for deposit");
+    function deposit(uint amount, bytes32 ticker) external tokenExists(ticker) {
+        require(IERC20(tokenMapping[ticker].tokenAddress).balanceOf(msg.sender)>= amount, "Insufficient balance for deposit");
         balances[msg.sender][ticker] = balances[msg.sender][ticker].add(amount);
         IERC20(tokenMapping[ticker].tokenAddress).transferFrom(msg.sender, address(this), amount);
     }
 
-    function withdraw(uint amount, bytes32 ticker) external tokenExists {
+    function withdraw(uint amount, bytes32 ticker) external tokenExists(ticker) {
         require(balances[msg.sender][ticker]>= amount, "Insufficient balance for withdrawal");
         balances[msg.sender][ticker] = balances[msg.sender][ticker].sub(amount);
         IERC20(tokenMapping[ticker].tokenAddress).transfer(msg.sender, amount);
