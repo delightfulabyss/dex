@@ -6,7 +6,7 @@ contract("Dex", accounts => {
         await deployer.deploy(Link);
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        truffleAssert.passes(
+        await truffleAssert.passes(
             dex.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[0] })
         );
     });
