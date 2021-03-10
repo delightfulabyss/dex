@@ -1,6 +1,6 @@
 const Dex = artifacts.require("Dex");
 const Link = artifacts.require("Link");
-const truffleAssert = artifacts.require('truffle-assertions');
+const truffleAssert = require('truffle-assertions');
 
 contract("Dex", accounts => {
     it("shold only be possible for owner to add tokens", async () => {
