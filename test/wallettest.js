@@ -21,7 +21,7 @@ contract("Dex", accounts => {
         await truffleAssert.passes(
             dex.deposit(100, web3.utils.utf8ToHex('LINK'))
         );
-        await assert.equal(
-            dex.balances(accounts[0], web3.utils.utf8ToHex('LINK')), 100);
+        let balance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
+        assert.equal(balance, 100);
     });
 });
