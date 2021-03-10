@@ -17,6 +17,6 @@ contract Dex is Wallet {
         uint amount;
         uint price;
     }
-
+    //Ticker => Side => Orderbook
     mapping(bytes32 => mapping(uint => Order[]));
 }
