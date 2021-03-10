@@ -20,6 +20,6 @@ contract("Dex", accounts => {
         await link.approve(dex.address, 500);
         await dex.deposit(100, web3.utils.utf8ToHex('LINK'))
         let balance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
-        assert.equal(balance, 100);
+        assert.equal(balance.toNumber(), 100);
     });
 });
