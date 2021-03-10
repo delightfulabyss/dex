@@ -22,4 +22,16 @@ contract("Dex", accounts => {
         let balance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
         assert.equal(balance.toNumber(), 100);
     });
+
+    it("should handle faulty token withdrawals correctly", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        await truffleAssert.reverts(dex.withdraw(200, web3.utils.utf8ToHex('LINK')));
+    });
+
+        it("should handle valid token withdrawals correctly", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        await truffleAssert.passes(dex.withdraw(100, web3.utils.utf8ToHex('LINK')));
+    });
 });
