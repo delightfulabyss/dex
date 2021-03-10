@@ -17,9 +17,11 @@ contract("Dex", accounts => {
     it("should handle token deposits correctly", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        link.approve(dex.address, 500);
+        await link.approve(dex.address, 500);
         await truffleAssert.passes(
             dex.deposit(100, web3.utils.utf8ToHex('LINK'))
         );
+        await assert.equal(
+            dex.balances(accounts[0], web3.utils.utf8ToHex('LINK')), 100);
     });
 });
