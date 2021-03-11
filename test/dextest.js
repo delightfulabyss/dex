@@ -75,6 +75,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
         await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
         let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 0);
+        assert(buyOrderBook.length > 0);
         assert.equal(
             buyOrderBook,
             buyOrderBook.sort((a, b) => {
@@ -91,6 +92,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
         await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
         let sellOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 1);
+        assert(sellOrderBook.length > 0);
         assert.equal(
             sellOrderBook,
             sellOrderBook.sort((a, b) => {

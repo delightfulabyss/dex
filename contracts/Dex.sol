@@ -5,6 +5,8 @@ import "./Wallet.sol";
 
 contract Dex is Wallet {
     
+    using SafeMath for uint256;
+
     enum Side {
         BUY,
         SELL
@@ -25,7 +27,12 @@ contract Dex is Wallet {
         return orderBook[_ticker][uint(_side)];
     }
 
-    function createLimitOrder(Side _side, bytes32 _ticker, uint _amount, uint _price) public     {
-
+    function createLimitOrder(Side _side, bytes32 _ticker, uint _amount, uint _price) public {
+        if(_side == Side.BUY){
+            require(balances[msg.sender]['ETH'] >= _amount.mul(_price));
+        }
+        if(_side == Side.SELL){
+            require(balances[msg.sender][_ticker] >= _amount);
+        }
     }
 }
