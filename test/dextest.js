@@ -34,4 +34,28 @@ contract("Dex", accounts => {
         let link = await Link.deployed();
         await truffleAssert.passes(dex.withdraw(100, web3.utils.utf8ToHex('LINK')));
     });
+
+    //The user must have enough ETH deposited such that deposited ETH >= buy order amount
+    it("should require that a user's balance must be larger than a buy order amount", async () => {
+
+    });
+
+    it("should throw an error when the user's balance is less than a buy order amount", async () => {
+
+    });
+    //The user must have enough tokens depsoited such that token balance > sell order amount
+    it("should require that a user's token balance is greater than the sell order amount", async () => {
+        
+    });
+    it("should throw an error when the user's token balance is less than a sell order amount", async () => {
+
+    });
+    //The buy orderbook should be ordered from highest to lowest in price starting at index 0
+    it("should be ordered from highest to lowest in price, starting from index 0", async () => {
+        let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 'BUY');
+        for (let index = 0; index < array.length; index++) {
+            const element = array[index];
+            
+        }
+    });
 });
