@@ -53,9 +53,14 @@ contract("Dex", accounts => {
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
         let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 'BUY');
-        for (let index = 0; index < array.length; index++) {
-            const element = array[index];
+        for (let index = 0; index < buyOrderBook.length; index++) {
+            let currentElement = buyOrderBook[index];
+            let nextElement = buyOrderBook[index + 1];
+            if (currentElement >= nextElement) {
+                continue;
+            } else {
             
+            }
         }
     });
 });
