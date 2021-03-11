@@ -43,11 +43,11 @@ contract("Dex", accounts => {
         let link = await Link.deployed();
         dex.depositEth({ value: 1 });
         await truffleAssert.reverts(
-            dex.limitOrder1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
         dex.depositEth({value: 9})
         await truffleAssert.passes(
-            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
     });
 
@@ -57,12 +57,12 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         await truffleAssert.reverts(
-            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
         await link.approve(500, dex.address);
         await dex.deposit(10, web3.utils.utf8ToHex('LINK'));
         await truffleAssert.passes(
-            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
     });
 
@@ -71,11 +71,13 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         await link.approve(500, dex.address);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
         let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 0);
-        assert.equal(buyOrderBook, buyOrderBook.sort((a, b) => {
+        assert.equal(
+            buyOrderBook,
+            buyOrderBook.sort((a, b) => {
             return b.price - a.price;
         }));
     });
@@ -85,11 +87,13 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         await link.approve(500, dex.address);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
-        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
+        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
         let sellOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 1);
-        assert.equal(sellOrderBook, sellOrderBook.sort((a, b) => {
+        assert.equal(
+            sellOrderBook,
+            sellOrderBook.sort((a, b) => {
             return a.price - b.price;
         }));
     });
