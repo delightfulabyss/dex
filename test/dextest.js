@@ -37,7 +37,7 @@ contract("Dex", accounts => {
 
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
     it("should require that a user's balance must be larger than a buy order amount", async () => {
-
+        truffleAssert.passes(dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY',);
     });
 
     it("should throw an error when the user's balance is less than a buy order amount", async () => {
