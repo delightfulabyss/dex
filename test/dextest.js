@@ -18,9 +18,9 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         await link.approve(dex.address, 500);
-        await dex.deposit(500, web3.utils.utf8ToHex('LINK'))
+        await dex.deposit(100, web3.utils.utf8ToHex('LINK'));
         let balance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
-        assert.equal(balance.toNumber(), 500);
+        assert.equal(balance.toNumber(), 100);
     });
 
     it("should handle faulty token withdrawals correctly", async () => {
@@ -42,32 +42,55 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         dex.depositEth({ value: 1 });
-        truffleAssert.reverts(
-            dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 10, 1)
+        await truffleAssert.reverts(
+            dex.limitOrder1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
         dex.depositEth({value: 9})
         await truffleAssert.passes(
-            dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 10, 1)
+            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
     });
 
-    //The user must have enough tokens deposited such that token balance > sell order amount
+    //The user must have enough tokens deposited such that token balance >= sell order amount
 
     it("should throw an error when the user's token balance is less than a sell order amount", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        let tokenBalance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
-        await dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'SELL', 450, 20);
-        let sellOrderBook = await getOrderBook(web3.utils.utf8ToHex('LINK'), 'SELL');
-        let sellOrderAmount = sellOrderBook[sellOrderBook.length - 1].amount;
-        truffleAssert.reverts(tokenBalance < sellOrderAmount);
+        await truffleAssert.reverts(
+            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+        );
+        await link.approve(500, dex.address);
+        await dex.deposit(10, web3.utils.utf8ToHex('LINK'));
+        await truffleAssert.passes(
+            dex.limitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+        );
     });
 
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-        let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 'BUY');
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        await link.approve(500, dex.address);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
+        let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 0);
         assert.equal(buyOrderBook, buyOrderBook.sort((a, b) => {
             return b.price - a.price;
+        }));
+    });
+
+    //The sell orderbook should be ordered from lowest to highest in price starting at index 0
+    it("should be ordered from highest to lowest in price, starting from index 0", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        await link.approve(500, dex.address);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
+        await dex.limitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
+        let sellOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 1);
+        assert.equal(sellOrderBook, sellOrderBook.sort((a, b) => {
+            return a.price - b.price;
         }));
     });
 });
