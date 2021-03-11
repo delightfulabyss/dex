@@ -37,37 +37,21 @@ contract("Dex", accounts => {
 
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
     //Get ETH balance => compare to buy order amount
-    //ETH balance will be 200 ETH per account
-    it("should require that a user's ETH balance must be larger than a buy order amount", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
-        let ethBalance = await web3.eth.getBalance(accounts[0]);
-        await dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 50, 1);
-        let buyOrderBook = await getOrderBook(web3.utils.utf8ToHex('LINK'), 'BUY');
-        let buyOrderAmount = buyOrderBook[buyOrderBook.length - 1].amount;
-        truffleAssert.passes(ethBalance > buyOrderAmount);
-    });
-
+    //ETH balance will be 10 ETH per account
     it("should throw an error when the user's ETH balance is less than a buy order amount", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        let ethBalance = await web3.eth.getBalance(accounts[0]);
-        await dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 150000, 1);
-        let buyOrderBook = await getOrderBook(web3.utils.utf8ToHex('LINK'), 'BUY');
-        let buyOrderAmount = buyOrderBook[buyOrderBook.length - 1].amount;
-        truffleAssert.reverts(ethBalance > buyOrderAmount);
+        dex.depositEth({ value: 1 });
+        truffleAssert.reverts(
+            dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 10, 1)
+        );
+        dex.depositEth({value: 9})
+        await truffleAssert.passes(
+            dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'BUY', 10, 1)
+        );
     });
 
     //The user must have enough tokens deposited such that token balance > sell order amount
-    it("should require that a user's token balance is greater than the sell order amount", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
-        let tokenBalance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
-        await dex.limitOrder(web3.utils.utf8ToHex('LINK'), 'SELL', 20, 1);
-        let sellOrderBook = await getOrderBook(web3.utils.utf8ToHex('LINK'), 'SELL');
-        let sellOrderAmount = sellOrderBook[sellOrderBook.length - 1].amount;
-        truffleAssert.passes(tokenBalance > sellOrderAmount);
-    });
 
     it("should throw an error when the user's token balance is less than a sell order amount", async () => {
         let dex = await Dex.deployed();
