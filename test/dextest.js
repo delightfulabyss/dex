@@ -43,7 +43,7 @@ contract("Dex", accounts => {
         let link = await Link.deployed();
         dex.depositEth({ value: 1 });
         await truffleAssert.reverts(
-            dex.createLimitOrder1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
         dex.depositEth({value: 9})
         await truffleAssert.passes(
