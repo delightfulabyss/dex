@@ -39,7 +39,7 @@ contract Dex is Wallet {
             require(balances[msg.sender][_ticker] >= _amount);
         }
         
-        Order[] storage orders = orderBook[ticker][uint(_side)];
+        Order[] storage orders = orderBook[_ticker][uint(_side)];
         orders.push(
             Order(nextOrderId, msg.sender, _side, _ticker, _amount, _price)
         );
