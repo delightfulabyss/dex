@@ -22,13 +22,6 @@ contract("Dex", accounts => {
         )
     });
 
-    it("should pass when the user's ETH balance is more than a buy limit order amount", async () => {
-        dex.depositEth({from: accounts[0], value: 11});
-        await truffleAssert.passes(
-            dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 10, 1)
-        );
-    });
-
     //The user must have enough tokens deposited such that token balance >= sell order amount
 
     it("should throw an error when the user's token balance is less than a sell order amount", async () => {
@@ -37,18 +30,9 @@ contract("Dex", accounts => {
         );
     });
 
-    it("should pass when the user's token balance is greater than a sell order amount", async () => {
-        await dex.addTokenSupport(LINK_TICKER, link.address);
-        await link.approve(dex.address, 500);
-        await dex.deposit(500, LINK_TICKER);
-        await truffleAssert.passes(
-            dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 10, 1)
-        );
-    });
-
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-
+        dex.depositEth({value: web3.utils.toWei('6', 'ether')});
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 3);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 1);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 2);
@@ -63,6 +47,7 @@ contract("Dex", accounts => {
 
     //The sell orderbook should be ordered from lowest to highest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
+        await dex.addTokenSupport(LINK_TICKER, link.address);
         await link.approve(dex.address, 600);
         await dex.deposit(600, LINK_TICKER);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
