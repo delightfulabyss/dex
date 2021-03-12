@@ -5,16 +5,16 @@ const truffleAssert = require('truffle-assertions');
 contract("Dex", accounts => {
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
     //ETH balance will be 10 ETH per account
-    it("should throw an error when the user's ETH balance is less than a buy order amount", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
+    it("should throw an error when the user's ETH balance is less than a buy limit order amount", async () => {
+        let dex = await Dex.deployed()
+        let link = await Link.deployed()
         await truffleAssert.reverts(
-            dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 10, 1)
-        );
+            dex.createLimitOrder(0, web3.utils.fromUtf8("LINK"), 10, 1)
+        )
         dex.depositEth({value: 10})
         await truffleAssert.passes(
-            dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 10, 1)
-        );
+            dex.createLimitOrder(0, web3.utils.fromUtf8("LINK"), 10, 1)
+        )
     });
 
     //The user must have enough tokens deposited such that token balance >= sell order amount
