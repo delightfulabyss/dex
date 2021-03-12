@@ -36,7 +36,7 @@ contract Dex is Wallet {
             require(balances[msg.sender]['ETH'] >= _amount.mul(_price), "ETH balances insufficient");
         }
         if(_side == Side.SELL){
-            require(balances[msg.sender][_ticker] >= _amount, "Token balances insufficient");
+            require(balances[msg.sender][_ticker] >= _amount, "Token balances insufficient" );
         }
         
         Order[] storage orders = orderBook[_ticker][uint(_side)];
