@@ -48,11 +48,10 @@ contract("Dex", accounts => {
 
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-        await link.approve(dex.address, 600);
-        await dex.deposit(600, LINK_TICKER);
-        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 300);
-        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 100);
-        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 200);
+
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 3);
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 1);
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 2);
         let buyOrderBook = getOrderBook(LINK_TICKER, 0);
         assert(buyOrderBook.length > 0);
         assert.equal(
@@ -64,9 +63,8 @@ contract("Dex", accounts => {
 
     //The sell orderbook should be ordered from lowest to highest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
-        await link.approve(dex.address, 500);
+        await link.approve(dex.address, 600);
+        await dex.deposit(600, LINK_TICKER);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 100);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 200);
