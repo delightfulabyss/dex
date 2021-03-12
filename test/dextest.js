@@ -23,7 +23,7 @@ contract("Dex", accounts => {
     });
 
     it("should pass when the user's ETH balance is more than a buy limit order amount", async () => {
-        dex.depositEth({from: accounts[0], value: 10 });
+        dex.depositEth({from: accounts[0], value: 11});
         await truffleAssert.passes(
             dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 10, 1)
         );
@@ -48,8 +48,8 @@ contract("Dex", accounts => {
 
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-
-        await link.approve(dex.address, 500);
+        await link.approve(dex.address, 600);
+        await dex.deposit(600, LINK_TICKER);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 300);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 100);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 200);
