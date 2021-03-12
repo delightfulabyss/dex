@@ -36,18 +36,16 @@ contract("Dex", accounts => {
     });
 
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
-    //Get ETH balance => compare to buy order amount
     //ETH balance will be 10 ETH per account
     it("should throw an error when the user's ETH balance is less than a buy order amount", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        dex.depositEth({ value: 1 });
         await truffleAssert.reverts(
-            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
-        dex.depositEth({value: 9})
+        dex.depositEth({value: 10})
         await truffleAssert.passes(
-            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 10, 1)
         );
     });
 
