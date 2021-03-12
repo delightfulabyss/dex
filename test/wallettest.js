@@ -1,10 +1,10 @@
-const Wallet = artifacts.require("Wallet");
+const Dex = artifacts.require("Dex");
 const Link = artifacts.require("Link");
 const truffleAssert = require('truffle-assertions');
 
-contract("Wallet", accounts => {
+contract("Dex", accounts => {
     it("shold only be possible for owner to add tokens", async () => {
-        let wallet = await Wallet.deployed();
+        let dex = await Dex.deployed();
         let link = await Link.deployed();
         await truffleAssert.passes(
             wallet.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[0] })
@@ -15,7 +15,7 @@ contract("Wallet", accounts => {
     });
 
     it("should handle token deposits correctly", async () => {
-        let wallet = await Wallet.deployed();
+        let dex = await Dex.deployed();
         let link = await Link.deployed();
         await link.approve(wallet.address, 500);
         await wallet.deposit(100, web3.utils.utf8ToHex('LINK'));
@@ -24,13 +24,13 @@ contract("Wallet", accounts => {
     });
 
     it("should handle faulty token withdrawals correctly", async () => {
-        let wallet = await Wallet.deployed();
+        let dex = await Dex.deployed();
         let link = await Link.deployed();
         await truffleAssert.reverts(wallet.withdraw(600, web3.utils.utf8ToHex('LINK')));
     });
 
     it("should handle valid token withdrawals correctly", async () => {
-        let wallet = await Wallet.deployed();
+        let dex = await Dex.deployed();
         let link = await Link.deployed();
         await truffleAssert.passes(wallet.withdraw(100, web3.utils.utf8ToHex('LINK')));
     });
