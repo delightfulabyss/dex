@@ -2,45 +2,58 @@ const Dex = artifacts.require("Dex");
 const Link = artifacts.require("Link");
 const truffleAssert = require('truffle-assertions');
 
+
+const LINK_TICKER = web3.utils.utf8ToHex("LINK");
+const BUY_SIDE = 0;
+const SELL_SIDE = 1;
+
 contract("Dex", accounts => {
+    let dex;
+    let link
+    before(async function () {
+        dex = await Dex.deployed();
+        link = await Link.deployed();
+    });
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
     //ETH balance will be 10 ETH per account
     it("should throw an error when the user's ETH balance is less than a buy limit order amount", async () => {
-        let dex = await Dex.deployed()
-        let link = await Link.deployed()
         await truffleAssert.reverts(
-            dex.createLimitOrder(0, web3.utils.fromUtf8("LINK"), 10, 1)
+            dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 10, 1)
         )
-        dex.depositEth({value: 10})
+    });
+
+    it("should pass when the user's ETH balance is more than a buy limit order amount", async () => {
+        dex.depositEth({from: accounts[0], value: 10 });
         await truffleAssert.passes(
-            dex.createLimitOrder(0, web3.utils.fromUtf8("LINK"), 10, 1)
-        )
+            dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 10, 1)
+        );
     });
 
     //The user must have enough tokens deposited such that token balance >= sell order amount
 
     it("should throw an error when the user's token balance is less than a sell order amount", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
         await truffleAssert.reverts(
-            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 10, 1)
         );
-        await link.approve(500, dex.address);
-        await dex.deposit(10, web3.utils.utf8ToHex('LINK'));
+    });
+
+    it("should pass when the user's token balance is greater than a sell order amount", async () => {
+        await dex.addTokenSupport(LINK_TICKER, link.address);
+        await link.approve(dex.address, 500);
+        await dex.deposit(500, LINK_TICKER);
         await truffleAssert.passes(
-            dex.createLimitOrder(1, web3.utils.utf8ToHex('LINK'), 10, 1)
+            dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 10, 1)
         );
     });
 
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-        let dex = await Dex.deployed();
-        let link = await Link.deployed();
-        await link.approve(500, dex.address);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
-        let buyOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 0);
+
+        await link.approve(dex.address, 500);
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 300);
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 100);
+        await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 200);
+        let buyOrderBook = getOrderBook(LINK_TICKER, 0);
         assert(buyOrderBook.length > 0);
         assert.equal(
             buyOrderBook,
@@ -53,11 +66,11 @@ contract("Dex", accounts => {
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        await link.approve(500, dex.address);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 300);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 100);
-        await dex.createLimitOrder(0, web3.utils.utf8ToHex('LINK'), 1, 200);
-        let sellOrderBook = getOrderBook(web3.utils.utf8ToHex('LINK'), 1);
+        await link.approve(dex.address, 500);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 100);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 200);
+        let sellOrderBook = getOrderBook(LINK_TICKER, 1);
         assert(sellOrderBook.length > 0);
         assert.equal(
             sellOrderBook,
