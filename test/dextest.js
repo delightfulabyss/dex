@@ -36,8 +36,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 3);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 1);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 2);
-        let buyOrderBook = getOrderBook(LINK_TICKER, 0);
-        assert(buyOrderBook.length > 0);
+        let buyOrderBook = await getOrderBook(LINK_TICKER, 0);
         assert.equal(
             buyOrderBook,
             buyOrderBook.sort((a, b) => {
@@ -53,8 +52,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 100);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 200);
-        let sellOrderBook = getOrderBook(LINK_TICKER, 1);
-        assert(sellOrderBook.length > 0);
+        let sellOrderBook = await getOrderBook(LINK_TICKER, 1);
         assert.equal(
             sellOrderBook,
             sellOrderBook.sort((a, b) => {
