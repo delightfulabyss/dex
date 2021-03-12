@@ -43,28 +43,28 @@ contract Dex is Wallet {
         orders.push(
             Order(nextOrderId, msg.sender, _side, _ticker, _amount, _price)
         );
-        //Bubble sort algorithm [1, 2, 3, 4, 5, 6. 7, 8, 9 , 10]
+        //Bubble sort algorithm 
         if(_side == Side.BUY){
             for (uint256 index = orders.length; index > 0; index--) {
-                if(orders[index].price > orders[index - 1].price){
-                    //swap element[index] and element[index - 1]
-                    Order memory temp = orders[index];
+                if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
+                    break;
+                } else if(orders[index].price < orders[index - 1].price){
+                    //swap last element and penultimate element
+                    Order memory orderToMove = orders[index];
                     orders[index] = orders[index - 1];
-                    orders[index - 1] = temp;
-                } else {
-                    continue;
+                    orders[index - 1] = orderToMove;
                 }
             }
         }
         else if(_side == Side.SELL){
             for (uint256 index = orders.length; index > 0; index--) {
-                if(orders[index].price < orders[index - 1].price){
+                if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
+                    break;
+                } else if(orders[index].price < orders[index - 1].price){
                     //swap last element and penultimate element
-                    Order memory temp = orders[index];
+                    Order memory orderToMove = orders[index];
                     orders[index] = orders[index - 1];
-                    orders[index - 1] = temp;
-                } else {
-                    continue;
+                    orders[index - 1] = orderToMove;
                 }
             }
         }
