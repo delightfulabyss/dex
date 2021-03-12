@@ -7,31 +7,31 @@ contract("Dex", accounts => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
         await truffleAssert.passes(
-            wallet.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[0] })
+            dex.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[0] })
         );
         await truffleAssert.reverts(
-            wallet.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[1] })
+            dex.addTokenSupport(web3.utils.utf8ToHex('LINK'), link.address, { from: accounts[1] })
         );
     });
 
     it("should handle token deposits correctly", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        await link.approve(wallet.address, 500);
-        await wallet.deposit(100, web3.utils.utf8ToHex('LINK'));
-        let balance = await wallet.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
+        await link.approve(dex.address, 500);
+        await dex.deposit(100, web3.utils.utf8ToHex('LINK'));
+        let balance = await dex.balances(accounts[0], web3.utils.utf8ToHex('LINK'));
         assert.equal(balance.toNumber(), 100);
     });
 
     it("should handle faulty token withdrawals correctly", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        await truffleAssert.reverts(wallet.withdraw(600, web3.utils.utf8ToHex('LINK')));
+        await truffleAssert.reverts(dex.withdraw(600, web3.utils.utf8ToHex('LINK')));
     });
 
     it("should handle valid token withdrawals correctly", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        await truffleAssert.passes(wallet.withdraw(100, web3.utils.utf8ToHex('LINK')));
+        await truffleAssert.passes(dex.withdraw(100, web3.utils.utf8ToHex('LINK')));
     });
 });
