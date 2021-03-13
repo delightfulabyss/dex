@@ -46,7 +46,7 @@ contract Dex is Wallet {
         //Bubble sort algorithm 
         uint i = orders.length > 0 ? orders.length - 1 : 0;
 
-        if(side == Side.BUY){
+        if(_side == Side.BUY){
             while(i > 0){
                 if(orders[i - 1].price > orders[i].price) {
                     break;   
@@ -57,7 +57,7 @@ contract Dex is Wallet {
                 i--;
             }
         }
-        else if (side == Side.SELL){
+        else if (_side == Side.SELL){
             while(i > 0){
                 if(orders[i - 1].price < orders[i].price) {
                     break;   
@@ -67,7 +67,6 @@ contract Dex is Wallet {
                 orders[i] = orderToMove;
                 i--;
             }
-        }}
         }
         nextOrderId++;
     }
