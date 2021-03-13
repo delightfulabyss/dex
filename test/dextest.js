@@ -50,8 +50,8 @@ contract("Dex", accounts => {
 
     //The buy orderbook should be ordered from highest to lowest in price starting at index 0
     it("should be ordered from highest to lowest in price, starting from index 0", async () => {
-        let dex = await Dex.deployed()
-        let link = await Link.deployed()
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
         await link.approve(dex.address, 500);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 300);
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 100);
@@ -65,8 +65,8 @@ contract("Dex", accounts => {
 
     //The sell orderbook should be ordered from lowest to highest in price starting at index 0
     it("should be ordered from lowest to highest in price, starting from index 0", async () => {
-        let dex = await Dex.deployed()
-        let link = await Link.deployed()
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
         await link.approve(dex.address, 500);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 100);
@@ -77,26 +77,57 @@ contract("Dex", accounts => {
         }
     });
     //When creating a sell market order, the seller needs to have enough tokens for the trade
-    it("should throw an error if the seller does not have enough tokens for the sell market order", async () => { });
+    it("should throw an error if the seller does not have enough tokens for the sell market order", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        let balance = await dex.balances(accounts[0], LINK_TICKER);
+        assert(balance.toNumber(), 0, "Initial LINK balance is not 0");
+        await truffleAssert.reverts(
+            dex.createMarketOrder(SELL_SIDE, LINK_TICKER, 10)
+        );
+    });
     
-    it("should pass if the seller has enough tokens for the sell market order", async () => {});
+    it("should pass if the seller has enough tokens for the sell market order", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        await dex.addTokenSupport(LINK_TICKER, link.address);
+        await link.approve(dex.address, 500);
+        await dex.deposit(10, LINK_TICKER);
+        let balance = await dex.balances(accounts[0], LINK_TICKER);
+        assert(balance.toNumber(), 10, "Initial LINK balance is not 10")
+        await truffleAssert.passes(
+            dex.createMarketOrder(SELL_SIDE, LINK_TICKER, 10)
+        );
+    });
     //When creating a buy market order, the buyer needs to have enough ETH for the trade
-    it("should throw an error if the buyer does not have enough ETH for the buy market order", async () => {});
+    it("should throw an error if the buyer does not have enough ETH for the buy market order", async () => {
+
+    });
     
-    it("should pass if the buyer has enough ETH for the buy market order", async () => {});
+    it("should pass if the buyer has enough ETH for the buy market order", async () => {
+
+    });
     
     //Market orders can be submitted even if the order book is empty
     it("should pass even if the market order book is empty", async () => {});
     
     //Market orders should be filled until the order book is empty or the market order is 100% filled
-    it("", async () => { });
+    it("", async () => {
+
+     });
     
     //The eth balance of the buyer should decrease with the filled amounts
-    it("should decrease the ETH balance proportionally with filled amounts", async () => { });
+    it("should decrease the ETH balance proportionally with filled amounts", async () => {
+        
+    });
     
     //The token balance of the seller should decrease with the filled amounts
-    it("should decrease the token balance proportionally with filled amounts", async () => {});
+    it("should decrease the token balance proportionally with filled amounts", async () => {
+
+    });
 
     //Filled limit orders should be removed from the orderbook
-    it("should remove limit orders from the orderbook when they are filled", async () => {});
+    it("should remove limit orders from the orderbook when they are filled", async () => {
+
+    });
 });
