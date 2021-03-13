@@ -76,4 +76,27 @@ contract("Dex", accounts => {
             assert(sellOrderBook[i].price <= sellOrderBook[i + 1].price, "Orderbook is not in correct order");
         }
     });
+    //When creating a sell market order, the seller needs to have enough tokens for the trade
+    it("should throw an error if the seller does not have enough tokens for the sell market order", async () => { });
+    
+    it("should pass if the seller has enough tokens for the sell market order", async () => {});
+    //When creating a buy market order, the buyer needs to have enough ETH for the trade
+    it("should throw an error if the buyer does not have enough ETH for the buy market order", async () => {});
+    
+    it("should pass if the buyer has enough ETH for the buy market order", async () => {});
+    
+    //Market orders can be submitted even if the order book is empty
+    it("should pass even if the market order book is empty", async () => {});
+    
+    //Market orders should be filled until the order book is empty or the market order is 100% filled
+    it("", async () => { });
+    
+    //The eth balance of the buyer should decrease with the filled amounts
+    it("should decrease the ETH balance proportionally with filled amounts", async () => { });
+    
+    //The token balance of the seller should decrease with the filled amounts
+    it("should decrease the token balance proportionally with filled amounts", async () => {});
+
+    //Filled limit orders should be removed from the orderbook
+    it("should remove limit orders from the orderbook when they are filled", async () => {});
 });
