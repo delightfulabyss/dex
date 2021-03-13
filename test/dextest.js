@@ -49,9 +49,9 @@ contract("Dex", accounts => {
         await dex.addTokenSupport(LINK_TICKER, link.address);
         await link.approve(dex.address, 600);
         await dex.deposit(600, LINK_TICKER);
-        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300);
-        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 100);
-        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 200);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 300, 1);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 100, 1);
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 200, 1);
         let sellOrderBook = await getOrderBook(LINK_TICKER, 1);
         assert.equal(
             sellOrderBook,
