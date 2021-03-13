@@ -53,7 +53,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 2);
         let buyOrderBook = await dex.getOrderBook(LINK_TICKER, 0);
         for (let i = 0; i < buyOrderBook.length - 1; i++) {
-            assert(buyOrderBook[i] >= buyOrderBook[i + 1]);
+            assert(buyOrderBook[i] >= buyOrderBook[i + 1], "Orderbook is not in correct order");
         }
 
     });
@@ -65,7 +65,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 200, 1);
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, 1);
         for (let i = 0; i < sellOrderBook.length - 1; i++) {
-            assert(sellOrderBook[i] >= sellOrderBook[i + 1]);
+            assert(sellOrderBook[i] >= sellOrderBook[i + 1], "Orderbook is not in correct order");
         }
     });
 });
