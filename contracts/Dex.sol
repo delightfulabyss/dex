@@ -45,7 +45,7 @@ contract Dex is Wallet {
         );
         //Bubble sort algorithm 
         if(_side == Side.BUY){
-            for (uint256 index = orders.length; index > 0; index--) {
+            for (uint256 index = orders.length - 1; index > 0; index--) {
                 if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
                     break;
                 } else if(orders[index].price < orders[index - 1].price){
@@ -57,7 +57,7 @@ contract Dex is Wallet {
             }
         }
         else if(_side == Side.SELL){
-            for (uint256 index = orders.length; index > 0; index--) {
+            for (uint256 index = orders.length - 1; index > 0; index--) {
                 if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
                     break;
                 } else if(orders[index].price < orders[index - 1].price){
