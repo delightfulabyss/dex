@@ -2,7 +2,7 @@ const Dex = artifacts.require("Dex");
 const Link = artifacts.require("Link");
 const truffleAssert = require('truffle-assertions');
 
-
+const ETH_TICKER = web3.utils.utf8ToHex("ETH");
 const LINK_TICKER = web3.utils.utf8ToHex("LINK");
 const BUY_SIDE = 0;
 const SELL_SIDE = 1;
