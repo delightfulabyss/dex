@@ -44,28 +44,28 @@ contract Dex is Wallet {
             Order(nextOrderId, msg.sender, _side, _ticker, _amount, _price)
         );
         //Bubble sort algorithm 
-        uint i = orders.length > 0 ? orders.length - 1 : 0;
-
         if(_side == Side.BUY){
-            while(i > 0){
-                if(orders[i - 1].price > orders[i].price) {
-                    break;   
+            for (uint256 index = orders.length - 1; index > 0; index--) {
+                if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
+                    break;
+                } else if(orders[index].price < orders[index - 1].price){
+                    //swap last element and penultimate element
+                    Order memory orderToMove = orders[index];
+                    orders[index] = orders[index - 1];
+                    orders[index - 1] = orderToMove;
                 }
-                Order memory orderToMove = orders[i - 1];
-                orders[i - 1] = orders[i];
-                orders[i] = orderToMove;
-                i--;
             }
         }
-        else if (_side == Side.SELL){
-            while(i > 0){
-                if(orders[i - 1].price < orders[i].price) {
-                    break;   
+        else if(_side == Side.SELL){
+            for (uint256 index = orders.length - 1; index > 0; index--) {
+                if (orders[index].price > orders[index - 1].price || orders[index].price == orders[index - 1].price){
+                    break;
+                } else if(orders[index].price < orders[index - 1].price){
+                    //swap last element and penultimate element
+                    Order memory orderToMove = orders[index];
+                    orders[index] = orders[index - 1];
+                    orders[index - 1] = orderToMove;
                 }
-                Order memory orderToMove = orders[i - 1];
-                orders[i - 1] = orders[i];
-                orders[i] = orderToMove;
-                i--;
             }
         }
         nextOrderId++;
