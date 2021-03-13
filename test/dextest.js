@@ -10,7 +10,6 @@ const SELL_SIDE = 1;
 contract("Dex", accounts => {
 
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
-    //ETH balance will be 11 ETH per account
     it("should throw an error when the user's ETH balance is less than a buy limit order amount", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
@@ -22,7 +21,7 @@ contract("Dex", accounts => {
     it("should pass when the user's ETH balance is greater than than a buy limit order amount", async () => {
         let dex = await Dex.deployed();
         let link = await Link.deployed();
-        dex.depositEth({ value: web3.utils.toWei('11', 'ether') });
+        dex.depositEth({ value: web3.utils.toWei('2', 'ether') });
         await truffleAssert.passes(
             dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 10, 1)
         )
@@ -59,7 +58,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(BUY_SIDE, LINK_TICKER, 1, 200);
         let buyOrderBook = await dex.getOrderBook(LINK_TICKER, 0);
         for (let i = 0; i < buyOrderBook.length - 1; i++) {
-            assert(buyOrderBook[i] >= buyOrderBook[i + 1], "Orderbook is not in correct order");
+            assert(buyOrderBook[i].price >= buyOrderBook[i + 1].price, "Orderbook is not in correct order");
         }
 
     });
@@ -74,7 +73,7 @@ contract("Dex", accounts => {
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 200);
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, 1);
         for (let i = 0; i < sellOrderBook.length - 1; i++) {
-            assert(sellOrderBook[i] <= sellOrderBook[i + 1], "Orderbook is not in correct order");
+            assert(sellOrderBook[i].price <= sellOrderBook[i + 1].price, "Orderbook is not in correct order");
         }
     });
 });
