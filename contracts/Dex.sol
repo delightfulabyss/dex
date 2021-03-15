@@ -109,15 +109,20 @@ contract Dex is Wallet {
 
                 //msg.sender is the buyer
                 //Transfer ETH from buyer to seller
-                orders[i].trader.call{value: cost}("");
+                balances[msg.sender][_ticker] = balances[msg.sender][_ticker].add(filled);
+                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][_ticker].sub(cost);
+
                 //Transfer tokens from seller to buyer
-                IERC20(tokenMapping[_ticker].tokenAddress).transferFrom(orders[i].trader, msg.sender, _amount);
+                balances[orders[i].trader][_ticker] = balances[orders[i].trader][_ticker].sub(filled);
+                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][_ticker].add(cost);
             } else if (_side == Side.SELL){
                 //msg.sender is the seller
                 //Transfer ETH from buyer to seller
-                msg.sender.call{value: cost}("");
+                balances[msg.sender][_ticker] = balances[msg.sender][_ticker].sub(filled);
+                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][_ticker].add(cost);       
                 //Transfer tokens from seller to buyer
-                IERC20(tokenMapping[_ticker].tokenAddress).transferFrom(msg.sender, orders[i].trader, _amount);
+                balances[orders[i].trader][_ticker] = balances[orders[i].trader][_ticker].add(filled);
+                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][_ticker].sub(cost);
             }
 
         }
