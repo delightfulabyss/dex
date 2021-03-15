@@ -42,7 +42,7 @@ contract Dex is Wallet {
         
         Order[] storage orders = orderBook[_ticker][uint(_side)];
         orders.push(
-            Order(nextOrderId, msg.sender, _side, _ticker, _amount, _price)
+            Order(nextOrderId, msg.sender, _side, _ticker, _amount, _price, 0)
         );
         //Bubble sort algorithm 
         if(_side == Side.BUY){
@@ -73,6 +73,56 @@ contract Dex is Wallet {
     }
 
     function createMarketOrder(Side _side, bytes32 _ticker, uint _amount) public {
-        
+            if (_side == Side.SELL){
+                //Verify that buyer has enough ETH tocover the purchase
+                require(balances[msg.sender][_ticker] >= _amount, "Insufficient balance for trade");
+            }
+        //Get opposite orderbook
+        Order[] storage orders = orderBook[_ticker][_side == Side.BUY ? 1 : 0];
+
+        uint totalFilled;
+
+        //loop through orderbook
+        for (uint256 i = 0; i < orders.length && totalFilled < _amount; i++) {
+            uint leftToFill = _amount.sub(totalFilled); //amount - totalFilled
+            //Identify how much we can fill from order[i]
+            uint availableToFill = orders[i].amount.sub(orders[i].filled); //order.amount - order.filled
+            uint filled = 0;
+            if(availableToFill > leftToFill) {
+                filled = leftToFill; //Fills the entire market order
+            } else{ //availableToFill <= leftToFill
+                filled = availableToFill; //Fills as much as is available in order[i]
+            }
+            //Update totalFilled
+            totalFilled = totalFilled.add(filled);
+
+            //Modify the order with the amount filled
+            orders[i].filled = orders[i].filled.add(filled);
+
+            //Define cost to buyer
+            uint cost = filled.mul(orders[i].price);
+
+            //Execute the trade for each order and shift balances between buyer and seller
+            if (_side == Side.BUY){
+                //Verify that buyer has enough ETH to cover the purchase (amount * price)
+                require(balances[msg.sender][bytes32('ETH')] >= cost, "Insufficient balance for trade");
+
+                //msg.sender is the buyer
+                //Transfer ETH from buyer to seller
+                orders[i].trader.call{value: cost}("");
+                //Transfer tokens from seller to buyer
+                IERC20(tokenMapping[_ticker].tokenAddress).transferFrom(orders[i].trader, msg.sender, _amount);
+            } else if (_side == Side.SELL){
+                //msg.sender is the seller
+                //Transfer ETH from buyer to seller
+                msg.sender.call{value: cost}("");
+                //Transfer tokens from seller to buyer
+                IERC20(tokenMapping[_ticker].tokenAddress).transferFrom(msg.sender, orders[i].trader, _amount);
+            }
+
+        }
+        //Loop through the orderbook and remove 100% filled orders
+        for (uint256 i = 0; i < orders.length; i++) {
+        }
     }
 }
