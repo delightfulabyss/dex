@@ -7,7 +7,7 @@ const LINK_TICKER = web3.utils.utf8ToHex("LINK");
 const BUY_SIDE = 0;
 const SELL_SIDE = 1;
 
-contract("Dex", accounts => {
+contract.skip("Dex", accounts => {
 
     //The user must have enough ETH deposited such that deposited ETH >= buy order amount
     it("should throw an error when the user's ETH balance is less than a buy limit order amount", async () => {
