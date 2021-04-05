@@ -110,19 +110,19 @@ contract Dex is Wallet {
                 //msg.sender is the buyer
                 //Add tokens and subtract ETH from buyer balances
                 balances[msg.sender][_ticker] = balances[msg.sender][_ticker].add(filled);
-                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][_ticker].sub(cost);
+                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][bytes32('ETH')].sub(cost);
 
                 //Add ETH and subtract token from seller balances
                 balances[orders[i].trader][_ticker] = balances[orders[i].trader][_ticker].sub(filled);
-                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][_ticker].add(cost);
+                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][bytes32('ETH')].add(cost);
             } else if (_side == Side.SELL){
                 //msg.sender is the seller
                 //Transfer ETH from buyer to seller
                 balances[msg.sender][_ticker] = balances[msg.sender][_ticker].sub(filled);
-                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][_ticker].add(cost);       
+                balances[msg.sender][bytes32('ETH')] = balances[msg.sender][bytes32('ETH')].add(cost);       
                 //Transfer tokens from seller to buyer
                 balances[orders[i].trader][_ticker] = balances[orders[i].trader][_ticker].add(filled);
-                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][_ticker].sub(cost);
+                balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][bytes32('ETH')].sub(cost);
             }
 
         }
