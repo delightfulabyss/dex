@@ -80,7 +80,7 @@ contract Dex is Wallet {
         //Get opposite orderbook
         Order[] storage orders = orderBook[_ticker][_side == Side.BUY ? 1 : 0];
 
-        uint totalFilled;
+        uint totalFilled = 0;
 
         //loop through orderbook
         for (uint256 i = 0; i < orders.length && totalFilled < _amount; i++) {
@@ -108,11 +108,11 @@ contract Dex is Wallet {
                 require(balances[msg.sender][bytes32('ETH')] >= cost, "Insufficient balance for trade");
 
                 //msg.sender is the buyer
-                //Transfer ETH from buyer to seller
+                //Add tokens and subtract ETH from buyer balances
                 balances[msg.sender][_ticker] = balances[msg.sender][_ticker].add(filled);
                 balances[msg.sender][bytes32('ETH')] = balances[msg.sender][_ticker].sub(cost);
 
-                //Transfer tokens from seller to buyer
+                //Add ETH and subtract token from seller balances
                 balances[orders[i].trader][_ticker] = balances[orders[i].trader][_ticker].sub(filled);
                 balances[orders[i].trader][bytes32('ETH')] = balances[orders[i].trader][_ticker].add(cost);
             } else if (_side == Side.SELL){
