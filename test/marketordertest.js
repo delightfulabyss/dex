@@ -122,7 +122,7 @@ contract("Dex", accounts => {
         let balanceAfter = await dex.balances(accounts[0], LINK_TICKER);
 
         //Verify buyer should only have 15 more link after purchase, event though the buy order was for 50
-        assert.equal(balanceBefore + 15, balanceAfter);
+        assert.equal(balanceBefore.toNumber() + 15, balanceAfter.toNumber());
         
      });
     
@@ -133,14 +133,14 @@ contract("Dex", accounts => {
 
         //Seller deposits link and creates a sell limit order for 1 link and 300 wei
         await link.approve(dex.address, 500, { from: accounts[1] });
-        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300, { from: accounts[0] });
+        await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300, { from: accounts[1] });
 
         //Check buyer ETH balance before trade
         let balanceBefore = await dex.balances(accounts[0], ETH_TICKER);
-        await dex.createMarketOrder(BUY_SIDE, 1);
+        await dex.createMarketOrder(BUY_SIDE, LINK_TICKER, 1);
         let balanceAfter = await dex.balances(accounts[0], ETH_TICKER);
 
-        assert.equal(balanceBefore - 300, balanceAfter);
+        assert.equal(balanceBefore.toNumber() - 300, balanceAfter.toNumber());
     });
     
     //The token balance of the seller should decrease with the filled amounts
@@ -153,6 +153,7 @@ contract("Dex", accounts => {
 
         //Seller account[1] already has approved and deposited link
         //Deposit link for account[2]
+        await link.transfer(accounts[2], 500);
         await link.approve(dex.address, 500, { from: accounts[2] });
         await dex.deposit(100, LINK_TICKER, { from: accounts[2] });
 
@@ -171,16 +172,23 @@ contract("Dex", accounts => {
         let account1BalanceAfter = await dex.balances(accounts[1], LINK_TICKER);
         let account2BalanceAfter = await dex.balances(accounts[2], LINK_TICKER);
 
-        assert.equal(account1BalanceBefore - 1, account1BalanceAfter);
-        assert.equal(account2BalanceBefore - 1, account2BalanceAfter);
+        assert.equal(account1BalanceBefore.toNumber() - 1, account1BalanceAfter.toNumber());
+        assert.equal(account2BalanceBefore.toNumber() - 1, account2BalanceAfter.toNumber());
     });
 
     //Filled limit orders should be removed from the orderbook
     it("should remove limit orders from the orderbook when they are filled", async () => {
         let dex = await Dex.deployed();
+        let link = await Link.deployed()
+        await dex.addTokenSupport(LINK_TICKER, link.address);
+
+        //Seller deposits link and creats a sell limit order for 1 link for 300 wei
+        await link.approve(dex.address, 500);
+        await dex.deposit(50, LINK_TICKER);
+
+        await dex.depositEth({ value: 10000 });
 
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, SELL_SIDE);
-        assert.equal(sellOrderBook.length, 0, "Sell orderbook should be empty before trade");
 
         await dex.createLimitOrder(SELL_SIDE, LINK_TICKER, 1, 300, { from: accounts[1] });
         await dex.createMarketOrder(BUY_SIDE, LINK_TICKER, 1);
