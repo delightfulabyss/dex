@@ -74,7 +74,7 @@ contract Dex is Wallet {
 
     function createMarketOrder(Side _side, bytes32 _ticker, uint _amount) public {
             if (_side == Side.SELL){
-                //Verify that buyer has enough ETH tocover the purchase
+                //Verify that seller has enough tokens to cover order
                 require(balances[msg.sender][_ticker] >= _amount, "Insufficient balance for trade");
             }
         //Get opposite orderbook
