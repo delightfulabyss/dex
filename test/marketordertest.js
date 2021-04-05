@@ -41,21 +41,21 @@ contract("Dex", accounts => {
         );
     });
     
-    // it("should pass if the buyer has enough ETH for the buy market order", async () => {
-    //     let dex = await Dex.deployed();
-    //     let link = await Link.deployed();
-    //     dex.depositEth({ value: web3.utils.toWei('5', 'ether') });
-    //     let balance = await dex.balances(accounts[0], ETH_TICKER);
-    //     assert(balance.toNumber(), 5, "Initial ETH balance is not 5");
-    //     await truffleAssert.reverts(
-    //         dex.createMarketOrder(BUY_SIDE, LINK_TICKER, 10)
-    //     );
-    // });
+    it("should pass if the buyer has enough ETH for the buy market order", async () => {
+        let dex = await Dex.deployed();
+        let link = await Link.deployed();
+        dex.depositEth({ value: 100000 });
+        let balance = await dex.balances(accounts[0], ETH_TICKER);
+        assert(balance.toNumber(), 100000, "Initial ETH balance is not 100000 wei");
+        await truffleAssert.passes(
+            dex.createMarketOrder(BUY_SIDE, LINK_TICKER, 10)
+        );
+    });
     
     //Market orders can be submitted even if the order book is empty
-    it("should pass even if the market order book is empty", async () => {
+    it("should create a market order even if the market order book is empty", async () => {
         let dex = await Dex.deployed();
-        await dex.depositEth({ value: web3.utils.toWei("1", 'ether') });
+        await dex.depositEth({ value: 100000 });
         let buyOrderBook = await dex.getOrderBook(LINK_TICKER, 0);
         assert.equal(buyOrderBook.length, 0, "Buy orderbook is not empty");
         await truffleAssert.passes(
