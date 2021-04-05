@@ -67,7 +67,7 @@ contract("Dex", accounts => {
     //Market orders should be filled until the order book is empty or the market order is 100% filled
     it("should not fill more limit orders than the market order amount", async () => {
         let dex = await Dex.deployed();
-        let link = await Dex.deployed();
+        let link = await Link.deployed();
 
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, 1);
         assert.equal(sellOrderBook.length, 0, "Orderbook is not empty");
@@ -129,7 +129,7 @@ contract("Dex", accounts => {
     //The eth balance of the buyer should decrease with the filled amounts
     it("should decrease the ETH balance proportionally with filled amounts", async () => {
         let dex = await Dex.deployed();
-        let link = await Dex.deployed();
+        let link = await Link.deployed();
 
         //Seller deposits link and creates a sell limit order for 1 link and 300 wei
         await link.approve(dex.address, 500, { from: accounts[1] });
@@ -146,7 +146,7 @@ contract("Dex", accounts => {
     //The token balance of the seller should decrease with the filled amounts
     it("should decrease the token balance proportionally with filled amounts", async () => {
         let dex = await Dex.deployed();
-        let link = await Dex.deployed();
+        let link = await Link.deployed();
 
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, 1);
         assert.equal(sellOrderBook.length, 0, "Sell orderbook should be empty");
@@ -193,7 +193,7 @@ contract("Dex", accounts => {
     //Partially-filled limit orders should be modified to represent the remaining amount
     it("should modify partially-filled limit orders to represent the remaining amount", async () => {
         let dex = await Dex.deployed();
-        let link = await Dex.deployed();
+        let link = await Link.deployed();
 
         let sellOrderBook = await dex.getOrderBook(LINK_TICKER, SELL_SIDE);
         assert.equal(sellOrderBook.length, 0, "Sell orderbook should be empty before trade");
