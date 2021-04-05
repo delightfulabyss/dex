@@ -127,7 +127,7 @@ contract Dex is Wallet {
 
         }
         //Loop through the orderbook and remove 100% filled orders (delete elements from an array that is sorted)
-        while (orders.length > 0 && orders[0].filled == orders[0].amount) {
+        while (orders.length > 0 &&  orders[0].filled == orders[0].amount) {
             //Remove the top element in the order array by overwriting every element with the next element in the orders list
             //Unbounded and therefore costly
             for (uint256 i = 0; i < orders.length - 1; i++) {
